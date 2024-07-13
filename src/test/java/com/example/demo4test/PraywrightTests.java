@@ -28,9 +28,21 @@ class PraywrightTests {
                      Page page = context.newPage()) {
 
                     page.navigate("http://localhost:"+port);
-                    assertEquals(page.waitForSelector("h1").innerText(),"SpringBootのテスト用アプリケーション");
                     page.screenshot(new Page.ScreenshotOptions().setFullPage(true)
-                            .setPath(Paths.get("screenshot-" + browserType.name() + ".png")));
+                            .setPath(Paths.get("target/testresult/screenshot-1-" + browserType.name() + ".png")));
+                    assertEquals("SpringBoot - テスト用画面",page.title());
+                    assertEquals("SpringBootのテスト用アプリケーション",page.waitForSelector("h1").innerText());
+                    assertEquals("メニューリスト",page.waitForSelector("h2").innerText());
+                    page.click("text=画面遷移");
+                    page.screenshot(new Page.ScreenshotOptions().setFullPage(true)
+                            .setPath(Paths.get("target/testresult/screenshot-2-" + browserType.name() + ".png")));
+                    assertEquals("Hello Thymeleaf",page.title());
+                    assertEquals("Hello Thymeleaf!!!!!!",page.waitForSelector("h1").innerText());
+                    assertEquals("メインメニューへ戻る",page.waitForSelector("h2").innerText());
+                    page.click("id=back");
+                    page.screenshot(new Page.ScreenshotOptions().setFullPage(true)
+                            .setPath(Paths.get("target/testresult/screenshot-3-" + browserType.name() + ".png")));
+                    assertEquals("SpringBootのテスト用アプリケーション",page.waitForSelector("h1").innerText());
                 }
             }
         }
