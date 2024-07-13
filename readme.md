@@ -1,4 +1,4 @@
-# Praywaight でSpringbootアプリをテストするためのサンプルプロジェクト
+# playwright でSpringbootアプリをテストするためのサンプルプロジェクト
 
 # 初期URL
 
