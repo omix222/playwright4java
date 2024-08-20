@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-class PraywrightTests {
+class PlaywrightTests {
     @LocalServerPort
     private int port;
 	@Test
