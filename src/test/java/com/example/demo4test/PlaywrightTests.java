@@ -16,36 +16,39 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PlaywrightTests {
     @LocalServerPort
     private int port;
-	@Test
-	void tests() {
+    @Test
+    void tests() {
         try (Playwright playwright = Playwright.create()) {
-            List<BrowserType> browserTypes =
-                    List.of(playwright.chromium(), playwright.webkit(), playwright.firefox());
+            List<BrowserType> browserTypes = List.of(playwright.chromium(), playwright.webkit(), playwright.firefox());
 
             for (BrowserType browserType : browserTypes) {
                 try (Browser browser = browserType.launch();
                      BrowserContext context = browser.newContext();
                      Page page = context.newPage()) {
 
-                    page.navigate("http://localhost:"+port);
-                    page.screenshot(new Page.ScreenshotOptions().setFullPage(true)
-                            .setPath(Paths.get("target/testresult/screenshot-1-" + browserType.name() + ".png")));
-                    assertEquals("SpringBoot - テスト用画面",page.title());
-                    assertEquals("SpringBootのテスト用アプリケーション",page.waitForSelector("h1").innerText());
-                    assertEquals("メニューリスト",page.waitForSelector("h2").innerText());
-                    page.click("text=画面遷移");
-                    page.screenshot(new Page.ScreenshotOptions().setFullPage(true)
-                            .setPath(Paths.get("target/testresult/screenshot-2-" + browserType.name() + ".png")));
-                    assertEquals("Hello Thymeleaf",page.title());
-                    assertEquals("Hello Thymeleaf!!!!!!",page.waitForSelector("h1").innerText());
-                    assertEquals("メインメニューへ戻る",page.waitForSelector("h2").innerText());
-                    page.click("id=back");
-                    page.screenshot(new Page.ScreenshotOptions().setFullPage(true)
-                            .setPath(Paths.get("target/testresult/screenshot-3-" + browserType.name() + ".png")));
-                    assertEquals("SpringBootのテスト用アプリケーション",page.waitForSelector("h1").innerText());
+                    // IndexPageオブジェクトの生成と操作
+                    IndexPage homePage = new IndexPage(page, port);
+                    homePage.takeScreenshot("target/testresult/screenshot-1-" + browserType.name() + ".png");
+                    assertEquals("SpringBoot - テスト用画面", homePage.getTitle());
+                    assertEquals("SpringBootのテスト用アプリケーション", homePage.getMainHeadingText());
+                    assertEquals("メニューリスト", homePage.getSubHeadingText());
+
+                    // TransitionPageオブジェクトの生成と操作
+                    homePage.clickScreenTransition();
+                    HelloPage transitionPage = new HelloPage(page);
+                    transitionPage.takeScreenshot("target/testresult/screenshot-2-" + browserType.name() + ".png");
+                    assertEquals("Hello Thymeleaf", transitionPage.getTitle());
+                    assertEquals("Hello Thymeleaf!!!!!!", transitionPage.getMainHeadingText());
+                    assertEquals("メインメニューへ戻る", transitionPage.getSubHeadingText());
+
+                    // 戻る操作
+                    transitionPage.clickBack();
+                    homePage.takeScreenshot("target/testresult/screenshot-3-" + browserType.name() + ".png");
+                    assertEquals("SpringBootのテスト用アプリケーション", homePage.getMainHeadingText());
                 }
             }
         }
+
 	}
 
 }
